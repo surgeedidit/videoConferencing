@@ -1,0 +1,26 @@
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+export const PORT = Number(process.env.PORT)!;
+export const DB_URL = process.env.DB_URL!;
+export const DB_NAME = process.env.DB_NAME!;
+export const JWT_SECRET = process.env.SECRET_KEY!;
+export const JWT_EXPIRATION = Number(process.env.ACCESS_TOKEN_EXPIRE_MINUTES!);
+export const REFRESH_TOKEN_EXPIRATION = Number(process.env.REFRESH_TOKEN_EXPIRE_DAYS!);
+export const REDIS_URL = process.env.REDIS_URL!;
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD!;
+export const REDIS_HOST = process.env.REDIS_HOST!;
+export const REDIS_PORT = Number(process.env.REDIS_PORT!);
+export const REDIS_USER = process.env.REDIS_USER;
+export const REDIS_TLS = process.env.REDIS_TLS!;
+export const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD!;
+export const GMAIL_USERNAME = process.env.GMAIL_USERNAME!;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
+export const SESSION_SECRET = process.env.SESSION_SECRET!;
+export const NODE_ENV = process.env.NODE_ENV!;
+export const CORS_ORIGIN = process.env.CORS_ORIGIN!;
+export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI!;
+export const FRONTEND_BASE_URI = process.env.FRONTEND_BASE_URI!;
+export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY!;

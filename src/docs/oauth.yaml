@@ -1,0 +1,79 @@
+paths:
+  /auth/google:
+    get:
+      tags:
+        - OAuth
+      summary: Initiates Google OAuth login
+      description: Redirects the user to the Google authentication screen. On success, it will return to the `/auth/google/redirect` endpoint.
+      responses:
+        "302":
+          description: Redirect to Google OAuth consent screen
+        "500":
+          description: Internal server error
+
+  /auth/google/redirect:
+    get:
+      tags:
+        - OAuth
+      summary: Google OAuth callback endpoint
+      description: Handles the Google OAuth callback. On success, returns url which contains the authToken to be sent to /auth/google/userdata
+      responses:
+        "302":
+          description: http://your_local_host:port/auth/google/callback?code=token
+        "404":
+          description: User not found
+
+  /auth/google/userdata:
+    post:
+      summary: fetches user data
+      tags: [OAuth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - authToken
+              properties:
+                token:
+                  type: string
+                  format: string
+                  example: yourToken
+        responses:
+          "200":
+            description: User data fetched
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: User data fetched successfully
+                    data:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                          example: jwt.token.here
+                        userData:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 123
+                            firstName:
+                              type: string
+                              example: John
+                            lastName:
+                              type: string
+                              example: Doe
+                            email:
+                              type: string
+                              example: user@example.com
+          "400":
+            description: User not found

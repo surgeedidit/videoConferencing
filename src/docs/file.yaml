@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: File Upload API
+  version: 1.0.0
+  description: API for uploading and retrieving files (profile images, chat files, etc.).
+
+paths:
+  /files:
+    post:
+      summary: Upload a file
+      description: Uploads a file and saves its metadata in the database.
+      tags:
+        - Files
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadFile'
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        "400":
+          description: Invalid request body
+        "500":
+          description: Internal server error
+
+  /files/{fileId}:
+    get:
+      summary: Get file by fileId
+      description: Retrieve a file record using its database ID.
+      tags:
+        - Files
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+          description: Unique ID of the file in the database.
+      responses:
+        "200":
+          description: File retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        "400":
+          description: Bad request (invalid fileId)
+        "404":
+          description: File not found
+        "500":
+          description: Internal server error
+
+  /files/cloud/{cloudId}:
+    get:
+      summary: Get file by cloudId
+      description: Retrieve a file record using its Cloudinary ID.
+      tags:
+        - Files
+      parameters:
+        - in: path
+          name: cloudId
+          required: true
+          schema:
+            type: string
+          description: Cloudinary public ID of the file.
+      responses:
+        "200":
+          description: File retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        "400":
+          description: Bad request (invalid cloudId)
+        "404":
+          description: File not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    UploadFile:
+      type: object
+      properties:
+        cloudId:
+          type: string
+          example: abc123xyz
+        url:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/v123456789/sample.jpg
+        sizeInMb:
+          type: number
+          format: float
+          example: 2.35
+        folder:
+          type: string
+          example: profile_pictures
+        originalName:
+          type: string
+          example: my_photo.png
+      required:
+        - cloudId
+        - url
+        - sizeInMb
+        - originalName
+
+    FileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64e3b82c9f1b2a0012345678
+        cloudId:
+          type: string
+          example: abc123xyz
+        url:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/v123456789/sample.jpg
+        sizeInMb:
+          type: number
+          example: 2.35
+        folder:
+          type: string
+          example: profile_pictures
+        originalName:
+          type: string
+          example: my_photo.png
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-08-29T12:34:56Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2025-08-29T12:40:00Z

@@ -1,0 +1,483 @@
+openapi: 3.0.0
+info:
+  title: OAU Video Conferencing API
+  version: 1.0.0
+  description: Authentication and user management API
+
+tags:
+  - name: Authentication
+    description: Authentication and user management
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        code:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: Invalid email or token
+
+paths:
+  /auth/register:
+    post:
+      summary: Register user with email only
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Registration successful
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/register/verify:
+    post:
+      summary: Verify user email with a token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - token
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                token:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: User email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: User email verified successfully!
+        '400':
+          description: Bad request - invalid email or token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/account/create:
+    post:
+      summary: Create a user account
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - firstName
+                - lastName
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: StrongP@ssword123
+      responses:
+        '200':
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: User account Created Successfully!
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 123
+                      firstName:
+                        type: string
+                        example: John
+                      lastName:
+                        type: string
+                        example: Doe
+                      email:
+                        type: string
+                        format: email
+                        example: user@example.com
+        '400':
+          description: Bad request - User does not exist or validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Login a user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successful
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: jwt.token.here
+                      refreshToken:
+                        type: string
+                        example: refresh.token.here
+                      userData:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: 123
+                          firstName:
+                            type: string
+                            example: John
+                          lastName:
+                            type: string
+                            example: Doe
+                          email:
+                            type: string
+                            example: user@example.com
+        '400':
+          description: Invalid input or user not found
+
+  /auth/password/reset/initiate:
+    post:
+      summary: Initiate password reset
+      description: Sends a password reset email with a token to the user.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Password reset email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Password reset email sent successfully!
+        '400':
+          description: Bad Request - Missing or invalid email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Email field is required
+
+  /auth/password/reset/verify:
+    post:
+      summary: Verify password reset token
+      description: Validates the password reset token sent to the user's email.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - token
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                token:
+                  type: string
+                  description: 6-digit verification token
+                  minLength: 6
+                  maxLength: 6
+                  example: "123456"
+      responses:
+        '200':
+          description: Token verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Token verified successfully!
+        '400':
+          description: Invalid token or user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Invalid token!
+
+  /auth/password/reset:
+    post:
+      summary: Reset password
+      description: Resets the password for the user after verifying the token.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - rePassword
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: StrongPassword123
+                rePassword:
+                  type: string
+                  minLength: 8
+                  example: StrongPassword123
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Password updated successfully!
+        '400':
+          description: Validation error or passwords do not match
+
+  /auth/token/refresh:
+    post:
+      summary: Refresh access token
+      description: Resets the access token for the user after verifying the refresh token.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '201':
+          description: Access token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Password updated successfully!
+                  data:
+                    token:
+                      type: string
+                      example: new.jwt.token.here
+        '403':
+          description: RefreshToken expired, return to login page
+
+  /auth/profile:
+    get:
+      summary: Get authenticated user profile
+      description: Retrieves the profile information of the currently authenticated user.
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: User profile retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 123
+                      email:
+                        type: string
+                        format: email
+                        example: user@example.com
+                      firstName:
+                        type: string
+                        example: John
+                        nullable: true
+                      lastName:
+                        type: string
+                        example: Doe
+                        nullable: true
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Token expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
