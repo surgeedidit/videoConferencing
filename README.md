@@ -1,6 +1,6 @@
-# oakpark-backend
+# video-conferencing-backend
 
-> Backend server for the OakPark video conferencing web application.
+> Backend server for the video-conferencing video conferencing web application.
 
 This is a Node.js backend built with Express, TypeScript, and Docker, using `TypeDI` for dependency injection and a clean project structure for scalability.
 
@@ -11,8 +11,8 @@ This is a Node.js backend built with Express, TypeScript, and Docker, using `Typ
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/OAKPARK-CONFERNCING/oakpark-backend.git
-cd oakpark-backend
+git clone https://github.com/video-conferencing-CONFERNCING/video-conferencing-backend.git
+cd video-conferencing-backend
 
 ```
 
